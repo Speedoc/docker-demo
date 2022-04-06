@@ -1,21 +1,22 @@
 # base image
-FROM node:16.14-alpine3.15
-
-RUN addgroup -g 1001 speedoc \
-  && adduser -u 1001 -G speedoc -s /bin/sh -h /demo -D speedoc \
-  && mkdir -p /demo/logs \
-  && chown -R speedoc:speedoc /demo
+FROM node:16.14-alpine3.15 as builder
 
 # create & set working directory
 WORKDIR /demo
 
 # copy source files
-COPY --chown=speedoc:speedoc . /demo
+COPY . /demo
 
 ENV NODE_ENV development
-RUN yarn
+RUN yarn \
+    && yarn build
 
-USER speedoc
+FROM gcr.io/distroless/nodejs:16
+
+COPY --from=builder /demo /demo
+
 # start app
+WORKDIR /demo
+ENV NODE_ENV production
 EXPOSE 3000/tcp
-ENTRYPOINT [ "yarn", "dev" ]
+CMD ["./node_modules/next/dist/bin/next", "start" ]
