@@ -17,5 +17,5 @@ RUN yarn
 
 USER speedoc
 # start app
-# EXPOSE 3000/tcp
+EXPOSE 3000/tcp
 ENTRYPOINT [ "yarn", "dev" ]
