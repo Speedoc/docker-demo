@@ -1,0 +1,13 @@
+version: '3'
+services:
+  app:
+    image: docker-demo:dev
+    volumes:
+      - .:/src
+      - /src/node_modules
+      - /src/.next
+    build:
+      dockerfile: docker/dev/Dockerfile
+      context: .
+    ports:
+      - 3000:3000
